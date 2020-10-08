@@ -6,11 +6,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from matplotlib.colors import LinearSegmentedColormap
-import matplotlib as mpl
 
 # sys.path is a list of absolute path strings
 import sys
-sys.path.append(r'C:\Users\owner\Google Drive 2\ELGO Paper')
+sys.path.append(r'C:\Users\owner\Google Drive 2\Additional Thesis')
 from modality import Modality
 from Koppen_class import Koppen
 
@@ -19,29 +18,34 @@ mod = []
 flats = []
 peak = []
 med = []
+med2 = []
+med3 = []
 text = []
 w = []
 T = []
 kop = []
-med2 = []
 
 #Raster read
 for im in range(1, 10):
-    w1 = (rasterio.open(r'C:\Users\owner\Google Drive 2\ELGO Paper\wc2.1_10m_prec\wc2.1_10m_prec_0{}.tif'.format(im)))
+    w1 = (rasterio.open(r'C:\Users\owner\Google Drive 2\Additional Thesis\wc2.1_10m_prec\wc2.1_10m_prec_0{}.tif'.format(im)))
     w.append(w1.read())
 for im in range(10, 13):
-    w1 = (rasterio.open(r'C:\Users\owner\Google Drive 2\ELGO Paper\wc2.1_10m_prec\wc2.1_10m_prec_{}.tif'.format(im)))
+    w1 = (rasterio.open(r'C:\Users\owner\Google Drive 2\Additional Thesis\wc2.1_10m_prec\wc2.1_10m_prec_{}.tif'.format(im)))
     w.append(w1.read())
 for im in range(1, 10):
-    w0 = (rasterio.open(r'C:\Users\owner\Google Drive 2\ELGO Paper\wc2.1_10m_tavg\wc2.1_10m_tavg_0{}.tif'.format(im)))
+    w0 = (rasterio.open(r'C:\Users\owner\Google Drive 2\Additional Thesis\wc2.1_10m_tavg\wc2.1_10m_tavg_0{}.tif'.format(im)))
     T.append(w0.read())
 for im in range(10, 13):
-    w0 = (rasterio.open(r'C:\Users\owner\Google Drive 2\ELGO Paper\wc2.1_10m_tavg\wc2.1_10m_tavg_{}.tif'.format(im)))
+    w0 = (rasterio.open(r'C:\Users\owner\Google Drive 2\Additional Thesis\wc2.1_10m_tavg\wc2.1_10m_tavg_{}.tif'.format(im)))
     T.append(w0.read())
 
+elev = (rasterio.open(r'C:\Users\owner\Google Drive 2\Additional Thesis\wc2.1_10m_elev\wc2.1_10m_elev.tif')).read()
+
+#Read shape of raster
 rows = w1.shape[0]
 cols = w1.shape[1]
 
+#Get rid of Nan values
 w = np.reshape(w, (12, rows, cols))
 w = w.astype("float")
 w[w < 0] = np.nan
@@ -50,28 +54,34 @@ T = np.reshape(T, (12, rows, cols))
 T = T.astype("float")
 T[T < -3e+38] = np.nan
 
-# n = np.random.randint(0, rows) #Width  (Υ)
-# m = np.random.randint(0, cols) #Lenght (Χ) 
+elev = np.reshape(elev, (1, rows, cols))
+elev = elev.astype("float")
+elev[elev == -32768] = np.nan
 
-# l = 50
-# k = 50
+m = np.random.randint(0, cols) #Lenght (Χ) 
+n = np.random.randint(0, rows) #Width  (Υ)
 
-# n = 285     #GREECE
-# m = 1195    #GREECE
+m = 1195      #GREECE
+n = 285       #GREECE
 
-n = 0       #Χ
-m = 0       #Υ
+l = 50
+k = 50
 
-l = rows     #Lenght (Χ)
-k = cols     #Width  (Υ)
+# m = 0           #X
+# n = 0           #Y
+
+# l = rows        #Lenght (Χ)
+# k = cols        #Width  (Υ)
 
 plt.figure()
 for i in range(int(n), int(n) + l):
      for j in range(int(m), int(m) + k):
             P = (w[0][i][j], w[1][i][j], w[2][i][j], w[3][i][j], w[4][i][j], w[5][i][j], w[6][i][j], w[7][i][j], w[8][i][j], w[9][i][j], w[10][i][j], w[11][i][j])
             T0 = (T[0][i][j], T[1][i][j], T[2][i][j], T[3][i][j], T[4][i][j], T[5][i][j], T[6][i][j], T[7][i][j], T[8][i][j], T[9][i][j], T[10][i][j], T[11][i][j])
+            z = elev[0][i][j]
             med.append(P)
             med2.append(T0)
+            med3.append(z)
             if w[0][i][j] >= 0:
                 mod.append(sum(Modality(P)[0]))
                 flats.append(Modality(P)[1])
@@ -81,7 +91,7 @@ for i in range(int(n), int(n) + l):
                 flats.append(np.nan)
                 peak.append(np.nan)
             if T[0][i][j] >= -300:
-                kop.append(Koppen(P, T0, z = 0)[0])
+                kop.append(Koppen(P, T0, z)[0])
             else:
                 kop.append(np.nan)
 
@@ -96,7 +106,7 @@ plt.imshow(mapp, cmap = 'Paired', interpolation = 'nearest')
 plt.legend([(i,j)])
 currentAxis = plt.gca()
 currentAxis.add_patch(Rectangle((m, n), k, l, fill = None, alpha = 1, color = 'r', lw = 2))
-currentAxis.add_patch(Rectangle((m, n), k, l, alpha = 0.0, color = 'r'))
+currentAxis.add_patch(Rectangle((m, n), k, l, alpha = 0.25, color = 'r'))
 plt.grid(color = 'black', ls = '--', alpha = 0.8)
 plt.show();
 
@@ -117,9 +127,18 @@ if not np.isnan(med).all() == True:
         histogr2 = pd.DataFrame(np.asarray(med2))
         perc25_2 = np.nanpercentile((np.asarray(med2)), 2.5, axis = 0)
         perc975_2 = np.nanpercentile((np.asarray(med2)), 97.5, axis = 0)
-    
+        
+    if not np.isnan(med3).all() == True:
+        median3 = pd.DataFrame(np.asarray(med3))
+        mean3 = np.mean(median3, axis = 0)
+        median3 = np.nanmedian(median3, axis = 0)
+        histogr3 = pd.DataFrame(np.asarray(med3))
+        perc25_3 = np.nanpercentile((np.asarray(med3)), 2.5, axis = 0)
+        perc975_3 = np.nanpercentile((np.asarray(med3)), 97.5, axis = 0)
+
         #COOL PLOT TEMPERATURE
         plt.figure()
+        plt.suptitle('Temperature', fontsize=20, fontweight='bold');
         plt.plot(x, median2);
         plt.plot(x, mean2);
         plt.ylabel('Temperature [oC]');
@@ -142,33 +161,35 @@ if not np.isnan(med).all() == True:
     peaky = f'Peaks: {areapeak}'
     
     #COOL PLOT PRECIPITATION
-    fig, (ax, ax2) = plt.subplots(1,2, gridspec_kw={'width_ratios': [1.5, 2]}, figsize = (25, 10))
-    fig.suptitle(text, x = 0.5, y = 1.08, fontsize=35, fontweight='bold');
-    ax.plot(x, median);
-    ax.plot(x, mean);
-    ax.set_ylabel('Precipitation [mm]');
-    ax.plot(months, perc25, color = 'blue', alpha=0.2)
-    ax.plot(months, perc975, color = 'blue', alpha=0.2)
-    ax.fill_between(months, perc25, perc975, alpha=0.1)
-    ax.legend(['Median', 'Mean', '95% Quantile'], loc = 'best');
-    ax.grid(ls = '--')
+    plt.figure()
+    plt.suptitle(text, fontsize=20, fontweight='bold');
+    plt.plot(x, median);
+    plt.plot(x, mean);
+    plt.ylabel('Precipitation [mm]');
+    plt.plot(months, perc25, color = 'blue', alpha=0.2)
+    plt.plot(months, perc975, color = 'blue', alpha=0.2)
+    plt.fill_between(months, perc25, perc975, alpha=0.1)
+    plt.legend(['Median', 'Mean', '95% Quantile'], loc = 'best');
+    plt.grid(ls = '--')
+    if areamod.any() > 0:
+        plt.text(-1.5, -20, peaky, horizontalalignment='left', verticalalignment='center', fontsize = 10)
+    if len(areaflat) > 0:
+        flaty = f'Flats: {areaflat}'
+        plt.text(3, -20, flaty, horizontalalignment='left', verticalalignment='center', fontsize = 10)
+    plt.show()
 
     #Location
-    ax2.title.set_text('Area')
+    plt.figure()
+    plt.title('Area')
     mapping = np.reshape(mod, ((l, k)))
     colormap1 = plt.imshow(mapping, cmap='coolwarm')
-    ax2.grid()
-    ax2.set_xticks([])
-    ax2.set_yticks([])
+    plt.grid()
+    plt.xticks([])
+    plt.yticks([])
     cbar2 = plt.colorbar(colormap1, shrink=1)
     cbar2.set_ticks([0, 1, 2, 3])
     cbar2.set_ticklabels(['Non-modal', 'Unimodal', 'Bimodal', 'Trimodal & Rest'])
-    if areamod.any() > 0:
-        ax2.text(0, 1.1, peaky, horizontalalignment='left', verticalalignment='center', transform=ax.transAxes, fontsize = 20)
-    if len(areaflat) > 0:
-        flaty = f'Flats: {areaflat}'
-        ax2.text(.5, 1.1, flaty, horizontalalignment='left', verticalalignment='center', transform=ax.transAxes, fontsize = 20)
-    
+
     plt.figure(figsize = (25, 4))
     Koppen_map = np.reshape(kop, ((l, k)))
     mapping2 = Koppen_map.copy()
@@ -239,7 +260,7 @@ if not np.isnan(med).all() == True:
     plt.grid()
     plt.xticks([])
     plt.yticks([])
-    plt.colorbar()
+    plt.colorbar();
 
 # =============================================================================
 #     values = np.arange(32)
@@ -256,6 +277,32 @@ if not np.isnan(med).all() == True:
 #     cb.set_ticklabels(classes)
 #     cb.ax.tick_params(labelsize = 8)
 # =============================================================================    
+
+    #Terrain
+    elevation = np.reshape(med3, (l, k))
+    elevation[np.isnan(elevation)] = 0
+    data = pd.DataFrame(elevation)
+    
+    # Transform it to a long format
+    df=data.unstack().reset_index()
+    df.columns=["X","Y","Z"]
+     
+    # And transform the old column name in something numeric
+    df['X']=pd.Categorical(df['X'])
+    df['X']=df['X'].cat.codes
+     
+    # Make the plot
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    ax.plot_trisurf(df['Y'], df['X'], df['Z'], cmap=plt.cm.viridis, linewidth=0.2)
+     
+    # to Add a color bar which maps values to colors.
+    surf=ax.plot_trisurf(df['Y'], df['X'], df['Z'], cmap=plt.cm.viridis, linewidth=0.2)
+    fig.colorbar( surf, shrink=0.5, aspect=5)
+     
+    # Rotate it
+    ax.view_init(azim = 0, elev = 60)
+    plt.show()
 
 #Duration
 end_time = datetime.now()
