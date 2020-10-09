@@ -1,4 +1,4 @@
-def Climate(path, prec1, prec2, temp1, temp2, elev_raster, m, n, l, k, rot, el):
+def Climate(path, prec1, prec2, temp1, temp2, elev_raster, m, n, l, k, rot, el, ter = False):
     from datetime import datetime
     start_time = datetime.now()
     import rasterio
@@ -7,7 +7,7 @@ def Climate(path, prec1, prec2, temp1, temp2, elev_raster, m, n, l, k, rot, el):
     import matplotlib.pyplot as plt
     from matplotlib.patches import Rectangle
     from matplotlib.colors import LinearSegmentedColormap
-    
+
     # sys.path is a list of absolute path strings
     import sys
     sys.path.append(path)
@@ -15,16 +15,7 @@ def Climate(path, prec1, prec2, temp1, temp2, elev_raster, m, n, l, k, rot, el):
     from Koppen_class import Koppen
 
     #Set the new matrices
-    mod = []
-    flats = []
-    peak = []
-    med = []
-    med2 = []
-    med3 = []
-    text = []
-    w = []
-    T = []
-    kop = []
+    mod, flats, peak, med, med2, med3, text, w, T, kop = ([] for i in range(10))
     
     #Raster read
     for im in range(1, 10):
@@ -101,7 +92,6 @@ def Climate(path, prec1, prec2, temp1, temp2, elev_raster, m, n, l, k, rot, el):
         median = pd.DataFrame(np.asarray(med))
         mean = np.mean(median, axis = 0)
         median = np.nanmedian(median, axis = 0)
-        histogr = pd.DataFrame(np.asarray(med))
         perc25 = np.nanpercentile((np.asarray(med)), 2.5, axis = 0)
         perc975 = np.nanpercentile((np.asarray(med)), 97.5, axis = 0)
         areamod, areaflat, areapeak = Modality(np.array(median));
@@ -110,18 +100,16 @@ def Climate(path, prec1, prec2, temp1, temp2, elev_raster, m, n, l, k, rot, el):
             median2 = pd.DataFrame(np.asarray(med2))
             mean2 = np.mean(median2, axis = 0)
             median2 = np.nanmedian(median2, axis = 0)
-            histogr2 = pd.DataFrame(np.asarray(med2))
             perc25_2 = np.nanpercentile((np.asarray(med2)), 2.5, axis = 0)
             perc975_2 = np.nanpercentile((np.asarray(med2)), 97.5, axis = 0)
-            
+        
         if not np.isnan(med3).all() == True:
             median3 = pd.DataFrame(np.asarray(med3))
-            mean3 = np.mean(median3, axis = 0)
-            median3 = np.nanmedian(median3, axis = 0)
-            histogr3 = pd.DataFrame(np.asarray(med3))
-            perc25_3 = np.nanpercentile((np.asarray(med3)), 2.5, axis = 0)
-            perc975_3 = np.nanpercentile((np.asarray(med3)), 97.5, axis = 0)
-    
+            maxelev = np.nanmax(median3)
+            minelev = np.nanmin(median3)
+            median3 = np.nanmedian(median3)
+            maxelev = np.nanmax(med3)
+            
             #COOL PLOT TEMPERATURE
             plt.figure()
             plt.suptitle('Temperature', fontsize=20, fontweight='bold');
@@ -158,10 +146,10 @@ def Climate(path, prec1, prec2, temp1, temp2, elev_raster, m, n, l, k, rot, el):
         plt.legend(['Median', 'Mean', '95% Quantile'], loc = 'best');
         plt.grid(ls = '--')
         if areamod.any() > 0:
-            plt.text(-1.5, -20, peaky, horizontalalignment='left', verticalalignment='center', fontsize = 10)
+            plt.text(-1.5, -25, peaky, horizontalalignment='left', verticalalignment='center', fontsize = 10)
         if len(areaflat) > 0:
             flaty = f'Flats: {areaflat}'
-            plt.text(3, -20, flaty, horizontalalignment='left', verticalalignment='center', fontsize = 10)
+            plt.text(3, -25, flaty, horizontalalignment='left', verticalalignment='center', fontsize = 10)
         plt.show()
     
         #Location
@@ -218,7 +206,6 @@ def Climate(path, prec1, prec2, temp1, temp2, elev_raster, m, n, l, k, rot, el):
            
         plt.show()
         colors = ["#003300", "#006600", "#009900", "#00cc00", "#cc0000", "#990000", "#cc9900", "#996600", "#00ff00", "#66ff66", "#99ff99", "#ff8c00", "#ffae00", "#ffcf00", "#66ff8c", "#66ffae", "#66ffcf", "#000099", "#0000cc", "#0000ff", "#3333ff", "#6600ff", "#9900ff", "#cc00ff", "#ff00ff", "#0066ff", "#0099ff", "#00ccff", "#00ffff", "#cccccc", "#ffffff", "#999933","#cccc66" ]
-        classes = ['Af - Tropical Wet', 'Am - Monsoon', 'As - Summer Savannah', 'Aw - Winter Savannah','BWh - Hot Waste', 'BWk - Cold Waste', 'BSh - Hot Steppe', 'BSk - Cold Steppe',  'Csa', 'Csb', 'Csc', 'Cwa', 'Cwb', 'Cwc', 'Cfa', 'Cfb', 'Cfc', 'Dsa', 'Dsb', 'Dsc', 'Dsd', 'Dwa', 'Dwb', 'Dwc', 'Dwd', 'Dfa', 'Dfb', 'Dfc', 'Dfd', 'ET - Tundra', 'EF - Frost or Ice Cap', 'HT - Tundra', 'HF - Frost or Ice Cap']
     
         def hex_to_rgb(value):
             value = value.strip("#") # removes hash symbol if present
@@ -242,13 +229,14 @@ def Climate(path, prec1, prec2, temp1, temp2, elev_raster, m, n, l, k, rot, el):
             cmp = LinearSegmentedColormap('my_cmp', segmentdata=cdict, N=256)
             return cmp
     
-        colormap = plt.imshow(mapping2, cmap=get_continuous_cmap(colors))
+        plt.imshow(mapping2, cmap=get_continuous_cmap(colors))
         plt.grid()
         plt.xticks([])
         plt.yticks([])
         plt.colorbar();
     
     # =============================================================================
+    #     classes = ['Af - Tropical Wet', 'Am - Monsoon', 'As - Summer Savannah', 'Aw - Winter Savannah','BWh - Hot Waste', 'BWk - Cold Waste', 'BSh - Hot Steppe', 'BSk - Cold Steppe',  'Csa', 'Csb', 'Csc', 'Cwa', 'Cwb', 'Cwc', 'Cfa', 'Cfb', 'Cfc', 'Dsa', 'Dsb', 'Dsc', 'Dsd', 'Dwa', 'Dwb', 'Dwc', 'Dwd', 'Dfa', 'Dfb', 'Dfc', 'Dfd', 'ET - Tundra', 'EF - Frost or Ice Cap', 'HT - Tundra', 'HF - Frost or Ice Cap']
     #     values = np.arange(32)
     #     
     #     fig = plt.figure( figsize=(2,4) )
@@ -278,18 +266,22 @@ def Climate(path, prec1, prec2, temp1, temp2, elev_raster, m, n, l, k, rot, el):
         df['X']=df['X'].cat.codes
          
         # Make the plot
-        fig = plt.figure()
-        ax = fig.gca(projection='3d')
-        ax.plot_trisurf(df['Y'], df['X'], df['Z'], cmap=plt.cm.viridis, linewidth=0.2)
-         
-        # to Add a color bar which maps values to colors.
-        surf=ax.plot_trisurf(df['Y'], df['X'], df['Z'], cmap=plt.cm.viridis, linewidth=0.2)
-        fig.colorbar( surf, shrink=0.5, aspect=5)
-         
-        # Rotate it
-        ax.view_init(azim = rot, elev = el)
-        plt.show()
+        if ter == True:
+            print(' ')
+            fig = plt.figure(figsize = (10, 10))
+            ax = fig.gca(projection='3d')
+            ax.set_title(f'Terrain Elevation:\n Median is {median3}m \n Maximum is {maxelev}m \n Minimum is {minelev}m', fontsize = 12)
+            ax.plot_trisurf(df['Y'], df['X'], df['Z'], cmap=plt.cm.viridis, linewidth=0.2)
+             
+            # to Add a color bar which maps values to colors.
+            surf=ax.plot_trisurf(df['Y'], df['X'], df['Z'], cmap=plt.cm.viridis, linewidth=0.2)
+            fig.colorbar( surf, shrink=0.5, aspect=5)
+             
+            # Rotate it
+            ax.view_init(azim = rot, elev = el)
+            plt.show()
     
     #Duration
     end_time = datetime.now()
-    print('Duration: {}'.format(end_time - start_time))
+    net_time = end_time - start_time
+    return df, net_time

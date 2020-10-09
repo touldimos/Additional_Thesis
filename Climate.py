@@ -15,8 +15,8 @@ elev_raster = r'C:\Users\owner\Google Drive 2\Additional Thesis\wc2.1_10m_elev\w
 m = 1195      #GREECE
 n = 285       #GREECE
 
-l = 50
-k = 50
+l = 5
+k = 5
 
 # m = 0           #X
 # n = 0           #Y
@@ -27,5 +27,5 @@ k = 50
 rot = 0
 el = 60
 
-time = Climate(path, prec1, prec2, temp1, temp2, elev_raster, m, n, k, l, rot, el)
+df, time = Climate(path, prec1, prec2, temp1, temp2, elev_raster, m, n, k, l, rot, el, ter = True)
 print(time)

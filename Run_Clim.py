@@ -64,8 +64,8 @@ n = np.random.randint(0, rows) #Width  (Υ)
 m = 1195      #GREECE
 n = 285       #GREECE
 
-l = 50
-k = 50
+l = 5
+k = 5
 
 # m = 0           #X
 # n = 0           #Y
@@ -131,6 +131,8 @@ if not np.isnan(med).all() == True:
     if not np.isnan(med3).all() == True:
         median3 = pd.DataFrame(np.asarray(med3))
         mean3 = np.mean(median3, axis = 0)
+        maxelev = np.nanmax(median3)
+        minelev = np.nanmin(median3)
         median3 = np.nanmedian(median3, axis = 0)
         histogr3 = pd.DataFrame(np.asarray(med3))
         perc25_3 = np.nanpercentile((np.asarray(med3)), 2.5, axis = 0)
