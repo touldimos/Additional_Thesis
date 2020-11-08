@@ -33,7 +33,7 @@ def Modality(P):
     f_df =  f_df.apply(classify)
     zeros = zero_runs(f_df['f'])
     f_df['P'] = P
-    
+
     mod = np.zeros(len(P))  
     for i in range(len(P)):
         if f_df['f'].iloc[i] < 0 and f_df['P'].iloc[i - 1] < f_df['P'].iloc[i]:

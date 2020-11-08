@@ -89,17 +89,17 @@ def Climate(path, prec1, prec2, temp1, temp2, elev_raster, m, n, l, k, rot, el, 
     
     #Stats
     if not np.isnan(med).all() == True:
-        median = pd.DataFrame(np.asarray(med))
-        mean = np.mean(median, axis = 0)
-        median = np.nanmedian(median, axis = 0)
+        array = pd.DataFrame(np.asarray(med))
+        mean = np.nanmean(array, axis = 0)
+        median = np.nanmedian(array, axis = 0)
         perc25 = np.nanpercentile((np.asarray(med)), 2.5, axis = 0)
         perc975 = np.nanpercentile((np.asarray(med)), 97.5, axis = 0)
         areamod, areaflat, areapeak = Modality(np.array(median));
         
         if not np.isnan(med2).all() == True:
-            median2 = pd.DataFrame(np.asarray(med2))
-            mean2 = np.mean(median2, axis = 0)
-            median2 = np.nanmedian(median2, axis = 0)
+            array2 = pd.DataFrame(np.asarray(med2))
+            mean2 = np.nanmean(array2, axis = 0)
+            median2 = np.nanmedian(array2, axis = 0)
             perc25_2 = np.nanpercentile((np.asarray(med2)), 2.5, axis = 0)
             perc975_2 = np.nanpercentile((np.asarray(med2)), 97.5, axis = 0)
         
@@ -145,12 +145,13 @@ def Climate(path, prec1, prec2, temp1, temp2, elev_raster, m, n, l, k, rot, el, 
         plt.fill_between(months, perc25, perc975, alpha=0.1)
         plt.legend(['Median', 'Mean', '95% Quantile'], loc = 'best');
         plt.grid(ls = '--')
+        plt.show()
+
         if areamod.any() > 0:
-            plt.text(-1.5, -25, peaky, horizontalalignment='left', verticalalignment='center', fontsize = 10)
+            print(peaky)
         if len(areaflat) > 0:
             flaty = f'Flats: {areaflat}'
-            plt.text(3, -25, flaty, horizontalalignment='left', verticalalignment='center', fontsize = 10)
-        plt.show()
+            print(flaty)
     
         #Location
         plt.figure()
@@ -258,6 +259,8 @@ def Climate(path, prec1, prec2, temp1, temp2, elev_raster, m, n, l, k, rot, el, 
         data = pd.DataFrame(elevation)
         
         # Transform it to a long format
+        global df
+        global zeros
         df=data.unstack().reset_index()
         df.columns=["X","Y","Z"]
          
