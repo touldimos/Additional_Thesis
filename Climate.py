@@ -17,17 +17,17 @@ cols = rast.shape[1]
 # m = np.random.randint(0, cols) #Lenght (Χ) 
 # n = np.random.randint(0, rows) #Width  (Υ)
 
-m = np.random.randint(1000, 1300) #Lenght (Χ) 
+m = np.random.randint(1000, 1300) #Lenght (Χ)
 n = np.random.randint(380, 600) #Width  (Υ)
 
 # m = 1195      #GREECE
 # n = 285       #GREECE
 
-l = 25
-k = 25
+l = 2
+k = 2
 
-# m = 0           #X
-# n = 0           #Y
+# m = 1169           #X
+# n = 392           #Y
 
 # l = rows        #Lenght (Χ)
 # k = cols        #Width  (Υ)

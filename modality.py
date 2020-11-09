@@ -32,13 +32,27 @@ def Modality(P):
     
     f_df =  f_df.apply(classify)
     zeros = zero_runs(f_df['f'])
+    if len(zeros) > 0:
+        if zeros[-1][1] == 12 and zeros[0][0] == 0:
+            zeros = np.insert(zeros, 0, [zeros[-1][0], zeros[0][1]], 0)
+            zeros = np.delete(zeros, 1, 0)
+            zeros = np.delete(zeros, -1, 0)
     f_df['P'] = P
 
     mod = np.zeros(len(P))  
     for i in range(len(P)):
         if f_df['f'].iloc[i] < 0 and f_df['P'].iloc[i - 1] < f_df['P'].iloc[i]:
             mod[i] = 1
-    
+    for i in range(len(zeros)):
+        if zeros[-1][1] == 12:
+            if P[zeros[i][0] - 1] < P[zeros[i][0]] and P[0] < P[zeros[i][0]]:
+                mod[zeros[i][0]] = 1
+        elif P[zeros[i][0] - 1] < P[zeros[i][0]] and P[zeros[i][0] + int(np.diff(zeros[i]))] < P[zeros[i][0]]:
+            mod[zeros[i][0]] = 1
+    for i in range(len(zeros)):
+        zeros[i][0] = zeros[i][0] + 1
+    for i in range(len(zeros)):
+        zeros[i][0] = zeros[i][0] + 1
     f_df['modality'] = mod
     peak = []
     def peaks(f_df):
