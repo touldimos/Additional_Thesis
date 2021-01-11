@@ -19,3 +19,7 @@ Guide to install rasterio -->	https://medium.com/@chrieke/howto-install-python-f
 				and gives Number of Peaks, Flats, Rain Modality, Koppen's classification and Terrain. (FIGURES)
 
 - Climate:			Run of Climate all
+
+
+- ECAD_Read:	Input-->	Input daily data of meteorological parameters, filter the flag and missing data
+		Outputs-->	Monthly meteorological data, map of the stations

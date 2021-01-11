@@ -162,8 +162,8 @@ def Climate(path, prec1, prec2, temp1, temp2, elev_raster, m, n, l, k, rot, el, 
         plt.xticks([])
         plt.yticks([])
         cbar2 = plt.colorbar(colormap1, shrink=1)
-        cbar2.set_ticks([0, 1, 2, 3])
-        cbar2.set_ticklabels(['Non-modal', 'Unimodal', 'Bimodal', 'Trimodal & Rest'])
+        cbar2.set_ticks([0, 1, 2, 3, 4])
+        cbar2.set_ticklabels(['Non-modal', 'Unimodal', 'Bimodal', 'Trimodal', 'Multimodal & rest'])
     
         plt.figure(figsize = (25, 4))
         Koppen_map = np.reshape(kop, ((l, k)))
@@ -287,4 +287,4 @@ def Climate(path, prec1, prec2, temp1, temp2, elev_raster, m, n, l, k, rot, el, 
     #Duration
     end_time = datetime.now()
     net_time = end_time - start_time
-    return df, net_time
+    return net_time

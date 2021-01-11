@@ -14,17 +14,18 @@ elev_raster = r'C:\Users\owner\Google Drive 2\MSc\TU DELFT - Water Managment\Add
 rast = (rasterio.open(prec1.format(1)))
 rows = rast.shape[0]
 cols = rast.shape[1]
-# m = np.random.randint(0, cols) #Lenght (Χ) 
+
+# m = np.random.randint(0, cols) #Lenght (Χ)
 # n = np.random.randint(0, rows) #Width  (Υ)
 
-m = np.random.randint(1000, 1300) #Lenght (Χ)
-n = np.random.randint(380, 600) #Width  (Υ)
+m = 1195      #GREECE
+n = 285       #GREECE
 
-# m = 1195      #GREECE
-# n = 285       #GREECE
+# m = 1095      #NETHERLANDS
+# n = 205       #NETHERLANDS
 
-l = 2
-k = 2
+l = 15
+k = 15
 
 # m = 1169           #X
 # n = 392           #Y
@@ -35,5 +36,4 @@ k = 2
 rot = 0
 el = 60
 
-df, time = Climate(path, prec1, prec2, temp1, temp2, elev_raster, m, n, k, l, rot, el, ter = False)
-print(time)
+Climate(path, prec1, prec2, temp1, temp2, elev_raster, m, n, k, l, rot, el, ter = False)
