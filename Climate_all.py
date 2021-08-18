@@ -12,7 +12,7 @@ def Climate(path, prec1, prec2, temp1, temp2, elev_raster, m, n, l, k, rot, el, 
     import sys
     sys.path.append(path)
     from modality import Modality
-    from Koppen_class import Koppen
+    from Koppen_ import koppen
 
     #Set the new matrices
     mod, flats, peak, med, med2, med3, text, w, T, kop = ([] for i in range(10))
@@ -68,7 +68,7 @@ def Climate(path, prec1, prec2, temp1, temp2, elev_raster, m, n, l, k, rot, el, 
                     flats.append(np.nan)
                     peak.append(np.nan)
                 if T[0][i][j] >= -300:
-                    kop.append(Koppen(P, T0, z)[0])
+                    kop.append(koppen(P, T0, z)[0])
                 else:
                     kop.append(np.nan)
     
@@ -203,7 +203,7 @@ def Climate(path, prec1, prec2, temp1, temp2, elev_raster, m, n, l, k, rot, el, 
         mapping2[mapping2 == 'HT - Tundra'] = 31
         mapping2[mapping2 == 'HF - Frost or Ice Cap'] = 32
         
-        mapping2 = mapping2.astype("float")
+        #mapping2 = mapping2.astype("float")
            
         plt.show()
         colors = ["#003300", "#006600", "#009900", "#00cc00", "#cc0000", "#990000", "#cc9900", "#996600", "#00ff00", "#66ff66", "#99ff99", "#ff8c00", "#ffae00", "#ffcf00", "#66ff8c", "#66ffae", "#66ffcf", "#000099", "#0000cc", "#0000ff", "#3333ff", "#6600ff", "#9900ff", "#cc00ff", "#ff00ff", "#0066ff", "#0099ff", "#00ccff", "#00ffff", "#cccccc", "#ffffff", "#999933","#cccc66" ]
